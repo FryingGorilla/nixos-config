@@ -2,6 +2,17 @@
 
 {
   flake.homeModules.karl-shell = { config, lib, ... }: {
+    programs.git = {
+      enable = true;
+      settings = {
+        init.defaultBranch = "main";
+        user = {
+          name = "Karl Markus Konstabel";
+          email = "karlmarkus.konstabel@gmail.com";
+        };
+      };
+    };
+
     # Keep history inside a preserved directory (zsh may replace history files).
     home.activation.migrateZshHistory = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       history_dir="${config.xdg.dataHome}/zsh"
