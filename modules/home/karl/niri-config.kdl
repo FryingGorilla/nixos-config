@@ -1,0 +1,172 @@
+input {
+    keyboard {
+        xkb {
+            layout "us"
+        }
+    }
+    touchpad {
+        tap
+        natural-scroll
+    }
+}
+
+cursor {
+    xcursor-theme "Bibata-Modern-Classic"
+    xcursor-size 24
+}
+
+layout {
+    gaps 4
+    center-focused-column "never"
+    background-color "#1a1a2e"
+}
+
+// https://docs.noctalia.dev/noctalia/compositor-settings/niri/
+window-rule {
+    geometry-corner-radius 20
+    clip-to-geometry true
+    background-effect {
+        blur true
+        xray false
+    }
+}
+
+window-rule {
+    match app-id="dev.noctalia.Noctalia"
+    open-floating true
+    default-column-width { fixed 1080; }
+    default-window-height { proportion 0.8; }
+}
+
+debug {
+    honor-xdg-activation-with-invalid-serial
+}
+
+// Pair with backdrop.enabled in desktop.nix.
+layer-rule {
+    match namespace="^noctalia-backdrop"
+    place-within-backdrop true
+}
+
+layer-rule {
+    match namespace="^noctalia-(bar-.*|notification|dock|panel|attached-panel|osd)$"
+    background-effect {
+        xray false
+    }
+}
+
+layer-rule {
+    match namespace="^noctalia-window-switcher$"
+    background-effect {
+        blur true
+        xray false
+    }
+}
+
+hotkey-overlay {
+    skip-at-startup
+}
+
+spawn-at-startup "noctalia"
+
+binds {
+    Mod+T { spawn "kitty"; }
+    Mod+E { spawn "kitty" "-e" "yazi"; }
+    Mod+Q       { close-window; }
+    Mod+Shift+E { quit; }
+
+    Mod+1 { focus-workspace 1; }
+    Mod+2 { focus-workspace 2; }
+    Mod+3 { focus-workspace 3; }
+    Mod+4 { focus-workspace 4; }
+    Mod+5 { focus-workspace 5; }
+    Mod+6 { focus-workspace 6; }
+    Mod+7 { focus-workspace 7; }
+    Mod+8 { focus-workspace 8; }
+    Mod+9 { focus-workspace 9; }
+
+    Mod+Shift+1 { move-window-to-workspace 1; }
+    Mod+Shift+2 { move-window-to-workspace 2; }
+    Mod+Shift+3 { move-window-to-workspace 3; }
+    Mod+Shift+4 { move-window-to-workspace 4; }
+    Mod+Shift+5 { move-window-to-workspace 5; }
+    Mod+Shift+6 { move-window-to-workspace 6; }
+    Mod+Shift+7 { move-window-to-workspace 7; }
+    Mod+Shift+8 { move-window-to-workspace 8; }
+    Mod+Shift+9 { move-window-to-workspace 9; }
+
+    Mod+Page_Up { focus-workspace-up; }
+    Mod+Page_Down { focus-workspace-down; }
+    Mod+Shift+Page_Up { move-window-to-workspace-up; }
+    Mod+Shift+Page_Down { move-window-to-workspace-down; }
+    Mod+Tab { focus-workspace-previous; }
+
+    Mod+Left  { focus-column-left; }
+    Mod+Right { focus-column-right; }
+    Mod+Up    { focus-window-up; }
+    Mod+Down  { focus-window-down; }
+    Mod+H { focus-column-left; }
+    Mod+J { focus-window-down; }
+    Mod+K { focus-window-up; }
+    Mod+L { focus-column-right; }
+
+    Mod+Shift+Left { move-column-left; }
+    Mod+Shift+Right { move-column-right; }
+    Mod+Shift+Up { move-window-up; }
+    Mod+Shift+Down { move-window-down; }
+    Mod+Shift+H { move-column-left; }
+    Mod+Shift+J { move-window-down; }
+    Mod+Shift+K { move-window-up; }
+    Mod+Shift+L { move-column-right; }
+
+    // Monitor focus and moving columns between displays.
+    Mod+Ctrl+Left { focus-monitor-left; }
+    Mod+Ctrl+Right { focus-monitor-right; }
+    Mod+Ctrl+Up { focus-monitor-up; }
+    Mod+Ctrl+Down { focus-monitor-down; }
+    Mod+Ctrl+Shift+Left { move-column-to-monitor-left; }
+    Mod+Ctrl+Shift+Right { move-column-to-monitor-right; }
+    Mod+Ctrl+Shift+Up { move-column-to-monitor-up; }
+    Mod+Ctrl+Shift+Down { move-column-to-monitor-down; }
+
+    // Layout, sizing, and overview.
+    Mod+F { maximize-column; }
+    Mod+Shift+F { fullscreen-window; }
+    Mod+V { toggle-window-floating; }
+    Mod+Shift+V { switch-focus-between-floating-and-tiling; }
+    Mod+R { switch-preset-column-width; }
+    Mod+Shift+R { switch-preset-window-height; }
+    Mod+Minus { set-column-width "-10%"; }
+    Mod+Equal { set-column-width "+10%"; }
+    Mod+Shift+Minus { set-window-height "-10%"; }
+    Mod+Shift+Equal { set-window-height "+10%"; }
+    Mod+C { center-column; }
+    Mod+BracketLeft { consume-or-expel-window-left; }
+    Mod+BracketRight { consume-or-expel-window-right; }
+    Mod+O repeat=false { toggle-overview; }
+    Mod+Shift+Slash { show-hotkey-overlay; }
+
+    Print { screenshot; }
+    Ctrl+Print { screenshot-screen; }
+    Alt+Print { screenshot-window; }
+
+    Mod+Ctrl+L repeat=false { spawn "noctalia" "msg" "session" "lock"; }
+    Mod+Escape repeat=false { spawn "noctalia" "msg" "panel-toggle" "session"; }
+    Mod+Ctrl+V repeat=false { spawn "noctalia" "msg" "panel-toggle" "clipboard"; }
+
+    Mod+Space         { spawn-sh "noctalia msg panel-toggle launcher"; }
+    Mod+S             { spawn-sh "noctalia msg panel-toggle control-center"; }
+    Mod+Shift+Comma   { spawn-sh "noctalia msg settings-toggle"; }
+    Alt+Tab           { spawn-sh "noctalia msg window-switcher"; }
+
+    XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "noctalia msg volume-up"; }
+    XF86AudioLowerVolume allow-when-locked=true { spawn-sh "noctalia msg volume-down"; }
+    XF86AudioMute allow-when-locked=true { spawn-sh "noctalia msg volume-mute"; }
+    XF86MonBrightnessUp allow-when-locked=true { spawn-sh "noctalia msg brightness-up"; }
+    XF86MonBrightnessDown allow-when-locked=true { spawn-sh "noctalia msg brightness-down"; }
+    XF86AudioMicMute allow-when-locked=true { spawn "noctalia" "msg" "mic-mute"; }
+    XF86AudioPlay allow-when-locked=true { spawn "noctalia" "msg" "media" "toggle"; }
+    XF86AudioPause allow-when-locked=true { spawn "noctalia" "msg" "media" "pause"; }
+    XF86AudioNext allow-when-locked=true { spawn "noctalia" "msg" "media" "next"; }
+    XF86AudioPrev allow-when-locked=true { spawn "noctalia" "msg" "media" "previous"; }
+}
