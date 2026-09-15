@@ -4,6 +4,7 @@
   flake.homeModules.karl-programs = { pkgs, ... }: {
     programs.vscode = {
       enable = true;
+      argvSettings."password-store" = "gnome-libsecret";
       profiles.default = {
         userSettings = {
           "workbench.iconTheme" = "material-icon-theme";
