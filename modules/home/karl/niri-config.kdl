@@ -68,6 +68,7 @@ hotkey-overlay {
 }
 
 spawn-at-startup "noctalia"
+spawn-at-startup "vesktop" "--start-minimized"
 
 binds {
     Mod+T { spawn "kitty"; }

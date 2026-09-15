@@ -2,8 +2,121 @@
 
 {
   flake.homeModules.karl-programs = { pkgs, ... }: {
+    programs.vscode = {
+      enable = true;
+      profiles.default = {
+        userSettings = {
+          "workbench.iconTheme" = "material-icon-theme";
+          "workbench.sideBar.location" = "right";
+        };
+        extensions = (with pkgs.vscode-extensions; [
+          arrterian.nix-env-selector
+          bbenoist.nix
+          christian-kohler.path-intellisense
+          dbaeumer.vscode-eslint
+          eamodio.gitlens
+          esbenp.prettier-vscode
+          gruntfuggly.todo-tree
+          jnoortheen.nix-ide
+          mechatroner.rainbow-csv
+          mkhl.direnv
+          ms-python.black-formatter
+          ms-python.debugpy
+          ms-python.python
+          ms-python.vscode-pylance
+          ms-python.vscode-python-envs
+          ms-toolsai.jupyter
+          ms-toolsai.jupyter-keymap
+          ms-toolsai.jupyter-renderers
+          ms-toolsai.vscode-jupyter-cell-tags
+          ms-toolsai.vscode-jupyter-slideshow
+          ms-vscode-remote.remote-ssh
+          ms-vscode-remote.remote-ssh-edit
+          ms-vscode.cpptools
+          ms-vscode.remote-explorer
+          oderwat.indent-rainbow
+          pkief.material-icon-theme
+          streetsidesoftware.code-spell-checker
+          usernamehw.errorlens
+          vscode-icons-team.vscode-icons
+          vscodevim.vim
+        ]) ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
+          {
+            name = "nix-extension-pack";
+            publisher = "pinage404";
+            version = "3.0.0";
+            sha256 = "sha256-cWXd6AlyxBroZF+cXZzzWZbYPDuOqwCZIK67cEP5sNk=";
+          }
+          {
+            name = "vscode-thunder-client";
+            publisher = "rangav";
+            version = "2.41.3";
+            sha256 = "sha256-bglCE7gW9maAWv1pBbSXKTttdmB0K0w/VotolcUrkH8=";
+          }
+          {
+            name = "vscode-todo-highlight";
+            publisher = "wayou";
+            version = "1.0.5";
+            sha256 = "sha256-CQVtMdt/fZcNIbH/KybJixnLqCsz5iF1U0k+GfL65Ok=";
+          }
+        ];
+      };
+    };
+
     programs.librewolf = {
       enable = true;
+      profiles.default = {
+        id = 0;
+        isDefault = true;
+        settings = {
+          "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
+          # LibreWolf otherwise clears cookies and site storage on shutdown,
+          # which logs out every account while retaining browsing history.
+          "privacy.sanitize.sanitizeOnShutdown" = false;
+          "privacy.clearOnShutdown_v2.cookiesAndStorage" = false;
+        };
+        userChrome = ''
+          /* Unplug is configured declaratively; hide its configuration UI. */
+          #unplug_unplug-extension-browser-action,
+          toolbarbutton[data-extensionid="unplug@unplug-extension"],
+          unified-extensions-item[extension-id="unplug@unplug-extension"] {
+            display: none !important;
+            visibility: collapse !important;
+          }
+        '';
+        extensions.settings = {
+          "addon@darkreader.org" = {
+            force = true;
+            settings = {
+              # Keep these preferences in local extension storage so the
+              # declarative values are not replaced by Firefox Sync.
+              syncSettings = false;
+              theme = {
+                grayscale = 25;
+                sepia = 25;
+              };
+            };
+          };
+          "unplug@unplug-extension" = {
+            force = true;
+            settings = builtins.removeAttrs
+              (builtins.fromJSON (builtins.readFile ./unplug-settings.json))
+              [ "_version" ];
+          };
+          "{26b4f076-089c-4c69-8497-44b7e5c9faef}" = {
+            force = true;
+            settings.socialFocus_options_state = {
+              youtube.socialFocus_youtube_gray_mode = true;
+              facebook = {
+                socialFocus_facebook_gray_mode = true;
+                # SocialFocus has separate desktop and mobile feed controls.
+                socialFocus_facebook_feed_hide_home_feed = true;
+                socialFocus_facebook_home_feed_hide_feed = true;
+              };
+            };
+          };
+        };
+      };
       policies.EncryptedMediaExtensions = {
         Enabled = true;
         Locked = true;
@@ -19,16 +132,24 @@
       policies.ExtensionSettings = {
         # LibreWolf's bundled uBlock Origin.
         "uBlock0@raymondhill.net".private_browsing = true;
+        "addon@darkreader.org" = {
+          private_browsing = true;
+          installation_mode = "force_installed";
+          install_url = "https://addons.mozilla.org/firefox/downloads/latest/darkreader/latest.xpi";
+          default_area = "navbar";
+        };
         # IDs verified against Mozilla Add-ons; install signed releases from AMO.
         "{26b4f076-089c-4c69-8497-44b7e5c9faef}" = {
           private_browsing = true;
           installation_mode = "force_installed";
           install_url = "https://addons.mozilla.org/firefox/downloads/latest/socialfocus/latest.xpi";
         };
-        "{2662ff67-b302-4363-95f3-b050218bd72c}" = {
+        # UnTrap moved the requested controls behind a paywall.
+        "{2662ff67-b302-4363-95f3-b050218bd72c}".installation_mode = "blocked";
+        "unplug@unplug-extension" = {
           private_browsing = true;
           installation_mode = "force_installed";
-          install_url = "https://addons.mozilla.org/firefox/downloads/latest/untrap-for-youtube/latest.xpi";
+          install_url = "https://addons.mozilla.org/firefox/downloads/latest/unplug/latest.xpi";
         };
         "{cb31ec5d-c49a-4e5a-b240-16c767444f62}" = {
           private_browsing = true;
@@ -168,6 +289,10 @@
       fd
       btop
       tealdeer
+      gcc
+      python3
+      uv
+      jupyter
     ];
   };
 }

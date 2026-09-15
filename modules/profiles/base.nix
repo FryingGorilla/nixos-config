@@ -21,17 +21,17 @@
 
     programs.zsh.enable = true;
 
-    # Smart-card reader access for the Web eID native messaging host.
+    # Smart-card reader access for DigiDoc4 and the Web eID native messaging host.
     services.pcscd.enable = true;
 
     environment.systemPackages = with pkgs; [
       curl
       git
       jq
+      qdigidoc
       ripgrep
       unzip
       vim
-      vscode
       wget
     ];
   };
