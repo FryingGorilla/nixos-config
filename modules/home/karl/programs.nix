@@ -10,8 +10,8 @@
           "workbench.sideBar.location" = "right";
         };
         extensions = (with pkgs.vscode-extensions; [
+          dracula-theme.theme-dracula
           arrterian.nix-env-selector
-          bbenoist.nix
           christian-kohler.path-intellisense
           dbaeumer.vscode-eslint
           eamodio.gitlens
@@ -36,28 +36,15 @@
           ms-vscode.remote-explorer
           oderwat.indent-rainbow
           pkief.material-icon-theme
-          streetsidesoftware.code-spell-checker
           usernamehw.errorlens
-          vscode-icons-team.vscode-icons
           vscodevim.vim
+          yzhang.markdown-all-in-one
         ]) ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
-          {
-            name = "nix-extension-pack";
-            publisher = "pinage404";
-            version = "3.0.0";
-            sha256 = "sha256-cWXd6AlyxBroZF+cXZzzWZbYPDuOqwCZIK67cEP5sNk=";
-          }
           {
             name = "vscode-thunder-client";
             publisher = "rangav";
             version = "2.41.3";
             sha256 = "sha256-bglCE7gW9maAWv1pBbSXKTttdmB0K0w/VotolcUrkH8=";
-          }
-          {
-            name = "vscode-todo-highlight";
-            publisher = "wayou";
-            version = "1.0.5";
-            sha256 = "sha256-CQVtMdt/fZcNIbH/KybJixnLqCsz5iF1U0k+GfL65Ok=";
           }
         ];
       };
