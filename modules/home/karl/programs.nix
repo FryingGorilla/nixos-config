@@ -8,6 +8,7 @@
         userSettings = {
           "workbench.iconTheme" = "material-icon-theme";
           "workbench.sideBar.location" = "right";
+          "workbench.colorTheme" = "Dracula Theme";
         };
         extensions = (with pkgs.vscode-extensions; [
           dracula-theme.theme-dracula
