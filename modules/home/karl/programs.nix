@@ -290,9 +290,8 @@
       btop
       tealdeer
       gcc
-      python3
+      (python3.withPackages (pythonPackages: [ pythonPackages.jupyter ]))
       uv
-      jupyter
     ];
   };
 }
