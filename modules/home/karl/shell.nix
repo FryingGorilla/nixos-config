@@ -1,7 +1,7 @@
 { ... }:
 
 {
-  flake.homeModules.karl-shell = { config, lib, ... }: {
+  flake.homeModules.karl-shell = { config, lib, pkgs, ... }: {
     programs.git = {
       enable = true;
       settings = {
@@ -25,6 +25,18 @@
         fi
       fi
     '';
+
+    # Keep the Bitwarden CLI pointed at the private self-hosted instance. The
+    # mutable vault state and credentials remain outside the Nix store.
+    home.activation.configureBitwardenCli = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      bitwarden_server="https://valge-asus.taila64456.ts.net"
+      current_server="$(${pkgs.bitwarden-cli}/bin/bw config server 2>/dev/null || true)"
+      if [ "$current_server" != "$bitwarden_server" ]; then
+        run ${pkgs.bitwarden-cli}/bin/bw config server "$bitwarden_server"
+      fi
+    '';
+
+    programs.tealdeer.settings.updates.auto_update = true;
 
     programs.oh-my-posh = {
       enable = true;

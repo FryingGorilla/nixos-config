@@ -4,13 +4,16 @@
   flake.homeModules.karl-programs = { pkgs, ... }: {
     programs.vscode = {
       enable = true;
-      argvSettings."password-store" = "gnome-libsecret";
+      package = pkgs.vscode.override {
+        commandLineArgs = "--password-store=gnome-libsecret";
+      };
       profiles.default = {
         userSettings = {
           "workbench.iconTheme" = "material-icon-theme";
           "workbench.sideBar.location" = "right";
           "workbench.secondarySideBar.defaultVisibility" = "hidden";
           "workbench.colorTheme" = "Dracula Theme";
+          "terminal.integrated.fontFamily" = "monospace, 'Symbols Nerd Font Mono'";
         };
         extensions = (with pkgs.vscode-extensions; [
           dracula-theme.theme-dracula
@@ -119,44 +122,46 @@
         "media.gmp-manager.url" = "https://aus5.mozilla.org/update/3/GMP/%VERSION%/%BUILD_ID%/%BUILD_TARGET%/%LOCALE%/%CHANNEL%/%OS_VERSION%/%DISTRIBUTION%/%DISTRIBUTION_VERSION%/update.xml";
       };
       nativeMessagingHosts = [ pkgs.web-eid-app ];
-      policies.ExtensionSettings = {
+      policies.ExtensionSettings = let
+          moz = short: "https://addons.mozilla.org/firefox/downloads/latest/${short}/latest.xpi";
+      in {
         # LibreWolf's bundled uBlock Origin.
         "uBlock0@raymondhill.net".private_browsing = true;
         "addon@darkreader.org" = {
           private_browsing = true;
           installation_mode = "force_installed";
-          install_url = "https://addons.mozilla.org/firefox/downloads/latest/darkreader/latest.xpi";
+          install_url = moz "darkreader";
           default_area = "navbar";
         };
-        "446900e4-71c2-419f-a6a7-df9c091e268b" = {
+        "{446900e4-71c2-419f-a6a7-df9c091e268b}" = {
           private_browsing = true;
           installation_mode = "force_installed";
-          install_url = "https://addons.mozilla.org/firefox/downloads/latest/bitwarden-password-manager/latest.xpi";
+          install_url = moz "bitwarden-password-manager";
           default_area = "navbar";
         };
         # IDs verified against Mozilla Add-ons; install signed releases from AMO.
         "{26b4f076-089c-4c69-8497-44b7e5c9faef}" = {
           private_browsing = true;
           installation_mode = "force_installed";
-          install_url = "https://addons.mozilla.org/firefox/downloads/latest/socialfocus/latest.xpi";
+          install_url = moz "socialfocus";
         };
         # UnTrap moved the requested controls behind a paywall.
         "{2662ff67-b302-4363-95f3-b050218bd72c}".installation_mode = "blocked";
         "unplug@unplug-extension" = {
           private_browsing = true;
           installation_mode = "force_installed";
-          install_url = "https://addons.mozilla.org/firefox/downloads/latest/unplug/latest.xpi";
+          install_url = moz "unplug";
         };
         "{cb31ec5d-c49a-4e5a-b240-16c767444f62}" = {
           private_browsing = true;
           installation_mode = "force_installed";
-          install_url = "https://addons.mozilla.org/firefox/downloads/latest/indie-wiki-buddy/latest.xpi";
+          install_url = moz "indie-wiki-buddy";
         };
         # RIA's official extension, linked from ID.ee's browser setup guide.
         "{e68418bc-f2b0-4459-a9ea-3e72b6751b07}" = {
           private_browsing = true;
           installation_mode = "force_installed";
-          install_url = "https://addons.mozilla.org/firefox/downloads/latest/web-eid-webextension/latest.xpi";
+          install_url = moz "web-eid-webextension";
         };
       };
       policies.Preferences."widget.disable-swipe-tracker" = {
@@ -281,6 +286,8 @@
     };
 
     home.packages = with pkgs; [
+      bitwarden-cli
+      bitwarden-desktop
       nerd-fonts.symbols-only
       fd
       btop

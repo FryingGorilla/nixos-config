@@ -36,7 +36,10 @@
           directories = [
             "Downloads"
             "Documents"
+            "Projects"
             ".config/nixos"
+            ".config/Bitwarden"
+            ".config/Bitwarden CLI"
             ".config/vesktop"
             ".local/share"
             ".local/state/noctalia"
