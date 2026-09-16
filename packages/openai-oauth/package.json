@@ -1,0 +1,7 @@
+{
+  "name": "openai-oauth-nix",
+  "private": true,
+  "dependencies": {
+    "openai-oauth": "2.0.0"
+  }
+}

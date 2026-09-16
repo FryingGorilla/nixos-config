@@ -17,6 +17,7 @@
       sharedModules = [
         inputs.noctalia.homeModules.default
         self.homeModules.karl
+        self.homeModules.karl-ai
         self.homeModules.karl-desktop
         self.homeModules.karl-programs
         self.homeModules.karl-shell

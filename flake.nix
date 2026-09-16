@@ -15,6 +15,15 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
 
+    codex-cli-nix = {
+      url = "github:sadjow/codex-cli-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    openai-oauth = {
+      url = "github:EvanZhouDev/openai-oauth";
+      flake = false;
+    };
+
     noctalia.url = "github:noctalia-dev/noctalia/cachix";
     noctalia-greeter = {
       url = "github:noctalia-dev/noctalia-greeter";

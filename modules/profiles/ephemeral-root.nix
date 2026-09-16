@@ -39,6 +39,7 @@
             ".config/vesktop"
             ".local/share"
             ".local/state/noctalia"
+            ".codex"
             ".ssh"
             ".librewolf"
             ".mozilla"
