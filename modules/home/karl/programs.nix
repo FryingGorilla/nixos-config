@@ -288,9 +288,11 @@
     home.packages = with pkgs; [
       bitwarden-cli
       bitwarden-desktop
+      telegram-desktop
       nerd-fonts.symbols-only
       fd
       btop
+      fastfetch
       tealdeer
       gcc
       nodejs
