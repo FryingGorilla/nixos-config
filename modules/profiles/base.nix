@@ -24,6 +24,11 @@
     # Smart-card reader access for DigiDoc4 and the Web eID native messaging host.
     services.pcscd.enable = true;
 
+    services.tailscale = {
+      enable = true;
+      openFirewall = true;
+    };
+
     environment.systemPackages = with pkgs; [
       curl
       git

@@ -28,6 +28,7 @@
           { directory = "/var/lib/nixos"; inInitrd = true; }
           "/var/lib/systemd/coredump"
           "/var/lib/bluetooth"
+          "/var/lib/tailscale"
           "/etc/NetworkManager/system-connections"
           "/etc/ssh"
         ];

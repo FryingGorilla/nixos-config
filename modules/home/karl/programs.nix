@@ -9,6 +9,7 @@
         userSettings = {
           "workbench.iconTheme" = "material-icon-theme";
           "workbench.sideBar.location" = "right";
+          "workbench.secondarySideBar.defaultVisibility" = "hidden";
           "workbench.colorTheme" = "Dracula Theme";
         };
         extensions = (with pkgs.vscode-extensions; [
@@ -125,6 +126,12 @@
           private_browsing = true;
           installation_mode = "force_installed";
           install_url = "https://addons.mozilla.org/firefox/downloads/latest/darkreader/latest.xpi";
+          default_area = "navbar";
+        };
+        "446900e4-71c2-419f-a6a7-df9c091e268b" = {
+          private_browsing = true;
+          installation_mode = "force_installed";
+          install_url = "https://addons.mozilla.org/firefox/downloads/latest/bitwarden-password-manager/latest.xpi";
           default_area = "navbar";
         };
         # IDs verified against Mozilla Add-ons; install signed releases from AMO.
@@ -279,6 +286,7 @@
       btop
       tealdeer
       gcc
+      nodejs
       (python3.withPackages (pythonPackages: [ pythonPackages.jupyter ]))
       uv
     ];

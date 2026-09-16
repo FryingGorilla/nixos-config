@@ -101,6 +101,7 @@
         ff = "fd";
         z = "cd";
         zi = "cdi";
+        "??" = "aichat --execute";
         rebuild = "sudo nixos-rebuild switch --flake ~/.config/nixos#$(hostname) --accept-flake-config";
         update = "nix flake update --flake path:~/.config/nixos && rebuild";
       };
