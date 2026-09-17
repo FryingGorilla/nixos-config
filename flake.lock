@@ -238,7 +238,45 @@
         "noctalia": "noctalia",
         "noctalia-greeter": "noctalia-greeter",
         "openai-oauth": "openai-oauth",
-        "preservation": "preservation"
+        "preservation": "preservation",
+        "spotx-nix": "spotx-nix"
+      }
+    },
+    "spotx-bash": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1789668608,
+        "narHash": "sha256-Rmde6/GxX23kxIwopmk2uUjrvq3sqQZ977BH9hMBnl8=",
+        "owner": "SpotX-Official",
+        "repo": "SpotX-Bash",
+        "rev": "a59489160f5d30eb2aeba4b1da155465d1306cdf",
+        "type": "github"
+      },
+      "original": {
+        "owner": "SpotX-Official",
+        "repo": "SpotX-Bash",
+        "type": "github"
+      }
+    },
+    "spotx-nix": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "spotx-bash": "spotx-bash"
+      },
+      "locked": {
+        "lastModified": 1789680251,
+        "narHash": "sha256-WaDRtlqv+W9netmH1NmQmNYS7wKGo8tjPE6m/+VJ04w=",
+        "owner": "SpotX-Official",
+        "repo": "SpotX-Nix",
+        "rev": "580fc685b2a5366ddf110d4edc9b4d2812e88539",
+        "type": "github"
+      },
+      "original": {
+        "owner": "SpotX-Official",
+        "repo": "SpotX-Nix",
+        "type": "github"
       }
     },
     "systems": {

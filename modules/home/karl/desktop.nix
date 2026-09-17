@@ -52,6 +52,7 @@ in
           schema_version = 2;
           widget_order = [
             "lockscreen-login-box@eDP-1"
+            "lockscreen-login-box@DP-2"
             "lockscreen-widget-0000000000000001"
           ];
           grid = {
@@ -59,14 +60,14 @@ in
             major_interval = 4;
             visible = true;
           };
-          widget = {
-            "lockscreen-login-box@eDP-1" = lockscreenPosition {
+          widget = let
+            loginBox = output: lockscreenPosition {
               x = 0.5;
               y = 35.0 / 48.0;
             } // {
               box_height = 128.0;
               box_width = 810.0;
-              output = "eDP-1";
+              inherit output;
               rotation = 0.0;
               type = "login_box";
               settings = {
@@ -86,6 +87,9 @@ in
                 show_weather = false;
               };
             };
+          in {
+            "lockscreen-login-box@eDP-1" = loginBox "eDP-1";
+            "lockscreen-login-box@DP-2" = loginBox "DP-2";
             lockscreen-widget-0000000000000001 = lockscreenPosition {
               x = 0.5;
               y = 5.0 / 12.0;

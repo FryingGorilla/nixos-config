@@ -1,8 +1,32 @@
-{ ... }:
+{ inputs, ... }:
 
 {
   flake.homeModules.karl-programs = { pkgs, ... }:
   let
+    spotifySpotx = (pkgs.extend inputs.spotx-nix.overlays.default).spotify-spotx.override {
+      # Block ads without enabling SpotX's experimental UI features.
+      spotxArgs = [ "-e" ];
+    };
+    spotifyPreferences = pkgs.writeText "spotify-preferences.json" (builtins.toJSON {
+      "ui.minimize_to_tray" = true;
+      "ui.track_os_notifications_enabled" = true;
+    });
+    configureSpotify = pkgs.writeShellScript "configure-spotify" ''
+      exec ${pkgs.python3}/bin/python3 ${./spotify-preferences.py} ${spotifyPreferences}
+    '';
+    spotifyDesktop = pkgs.symlinkJoin {
+      name = "spotify-desktop";
+      paths = [ spotifySpotx ];
+      nativeBuildInputs = [ pkgs.makeWrapper ];
+      postBuild = ''
+        # Work around Spotify's Wayland frame and close-to-tray issues.
+        # The upstream Nix wrapper otherwise unsets DISPLAY on Wayland.
+        wrapProgram $out/bin/spotify \
+          --set NIXOS_OZONE_WL 0 \
+          --run ${configureSpotify} \
+          --add-flags "--ozone-platform=x11 --disable-features=HardwareMediaKeyHandling,MediaSessionService"
+      '';
+    };
     openRemoteSsh = pkgs.vscode-utils.buildVscodeExtension {
       pname = "jeanp413-open-remote-ssh";
       version = "0.3.1";
@@ -44,6 +68,7 @@
           mechatroner.rainbow-csv
           mkhl.direnv
           detachhead.basedpyright
+          ms-python.python
           charliermarsh.ruff
           ms-toolsai.jupyter
           ms-toolsai.jupyter-keymap
@@ -298,6 +323,7 @@
     };
 
     home.packages = with pkgs; [
+      spotifyDesktop
       bitwarden-cli
       bitwarden-desktop
       megacmd
