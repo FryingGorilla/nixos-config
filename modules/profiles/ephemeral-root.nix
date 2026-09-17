@@ -37,6 +37,7 @@
             "Downloads"
             "Documents"
             "Projects"
+            "Media"
             ".config/nixos"
             ".config/Bitwarden"
             ".config/Bitwarden CLI"

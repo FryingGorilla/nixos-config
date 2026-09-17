@@ -45,6 +45,8 @@ write_host() {
 EOF
   if [[ $profile == laptop ]]; then
     printf '      self.nixosModules.laptop\n' >> "$tree/modules/installed/$name.nix"
+  else
+    printf '      self.nixosModules.pc\n' >> "$tree/modules/installed/$name.nix"
   fi
   cat >> "$tree/modules/installed/$name.nix" <<EOF
       ({ lib, ... }: {

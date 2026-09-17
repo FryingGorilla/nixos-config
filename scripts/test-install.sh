@@ -19,6 +19,10 @@ nixos-generate-config() {
 write_host "$fixture" test-pc /dev/vda pc
 write_host "$fixture" test-laptop /dev/nvme0n1 laptop
 grep -q 'self.nixosModules.laptop$' "$fixture/modules/installed/test-laptop.nix"
+grep -q 'self.nixosModules.pc$' "$fixture/modules/installed/test-pc.nix"
+if grep -q 'self.nixosModules.pc$' "$fixture/modules/installed/test-laptop.nix"; then
+  die 'Laptop inherited the PC profile'
+fi
 if grep -q 'self.nixosModules.laptop$' "$fixture/modules/installed/test-pc.nix"; then
   die 'PC inherited the laptop profile'
 fi
