@@ -288,6 +288,8 @@
     home.packages = with pkgs; [
       bitwarden-cli
       bitwarden-desktop
+      megacmd
+      megasync
       telegram-desktop
       nerd-fonts.symbols-only
       fd
