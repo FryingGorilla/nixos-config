@@ -140,7 +140,7 @@ main() {
   printf 'sudo env TMPDIR=/mnt/persist/install-tmp nixos-install --root /mnt --no-root-passwd --flake path:%s#%s --option accept-flake-config true --max-jobs 1 --cores 2\n\n' "$target" "$name"
   TMPDIR=/mnt/persist/install-tmp nixos-install --root /mnt --no-root-passwd \
     --flake "path:$target#$name" --option accept-flake-config true --max-jobs 1 --cores 2
-  printf '\nInstallation complete. Reboot and remove the USB.\nLog in as karl / 12345, then run sudo bash scripts/set-password.sh from the NixOS configuration directory.\n'
+  printf '\nInstallation complete. Reboot and remove the USB.\nLog in as karl / 12345, then run bash scripts/set-password.sh from the NixOS configuration directory.\n'
   printf 'Rebuild from ~/.config/nixos with: sudo nixos-rebuild switch --accept-flake-config --flake path:.#%s\n' "$name"
   printf 'Generated hardware and host files are in hardware/%s.nix and modules/installed/%s.nix; commit them after installation.\n' "$name" "$name"
 }

@@ -50,8 +50,9 @@ the ROCm OpenCL/HIP runtime. Both include the same desktop and user setup.
 Other hardware-specific features may still need configuration.
 
 When it finishes, reboot and remove the USB. Log in as `karl` / `12345`, then
-run `passwd`. Your configuration is in `~/.config/nixos`. For a machine named
-`pc`, future updates are:
+run `bash scripts/set-password.sh` from `~/.config/nixos`. The script changes
+the login and GNOME Keyring passwords together and preserves the new login
+password across reboots. For a machine named `pc`, future updates are:
 
 ```sh
 cd ~/.config/nixos

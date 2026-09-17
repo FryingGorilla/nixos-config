@@ -38,6 +38,15 @@ window-rule {
     default-window-height { proportion 0.8; }
 }
 
+// MEGAsync's dashboard is a fixed-size tray panel rather than a resizable UI.
+// Keep only that panel floating at its intended dimensions.
+window-rule {
+    match app-id="^nz[.]co[.]mega[.]$" title="^MEGAsync$"
+    open-floating true
+    default-column-width { fixed 402; }
+    default-window-height { fixed 564; }
+}
+
 debug {
     honor-xdg-activation-with-invalid-serial
 }

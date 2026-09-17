@@ -11,6 +11,11 @@
     users.users.karl.initialPassword = "12345";
     users.users.karl.uid = 1000;
     users.users.root.hashedPassword = "!";
+
+    # Let user-run passwd changes re-encrypt the login keyring with the new
+    # password. Running passwd as root cannot provide the old keyring password.
+    security.pam.services.passwd.enableGnomeKeyring = true;
+
     preservation.preserveAt."/persist".directories = [
       { directory = "/var/lib/userborn"; inInitrd = true; }
     ];

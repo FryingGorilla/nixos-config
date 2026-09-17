@@ -1,10 +1,25 @@
 { ... }:
 
 {
-  flake.homeModules.karl-programs = { pkgs, ... }: {
-    programs.vscode = {
+  flake.homeModules.karl-programs = { pkgs, ... }:
+  let
+    openRemoteSsh = pkgs.vscode-utils.buildVscodeExtension {
+      pname = "jeanp413-open-remote-ssh";
+      version = "0.3.1";
+      vscodeExtPublisher = "jeanp413";
+      vscodeExtName = "open-remote-ssh";
+      vscodeExtUniqueId = "jeanp413.open-remote-ssh";
+      src = pkgs.fetchurl {
+        name = "jeanp413.open-remote-ssh-0.3.1.vsix";
+        url = "https://open-vsx.org/api/jeanp413/open-remote-ssh/0.3.1/file/jeanp413.open-remote-ssh-0.3.1.vsix";
+        hash = "sha256-xvFrIlq4aSXyvZ6Mxbox5hSXjM+hIPFQm99umeW+8T8=";
+      };
+    };
+  in
+  {
+    programs.vscodium = {
       enable = true;
-      package = pkgs.vscode.override {
+      package = pkgs.vscodium.override {
         commandLineArgs = "--password-store=gnome-libsecret";
       };
       profiles.default = {
@@ -14,6 +29,8 @@
           "workbench.secondarySideBar.defaultVisibility" = "hidden";
           "workbench.colorTheme" = "Dracula Theme";
           "terminal.integrated.fontFamily" = "monospace, 'Symbols Nerd Font Mono'";
+          "clangd.path" = "${pkgs.clang-tools}/bin/clangd";
+          "[python]"."editor.defaultFormatter" = "charliermarsh.ruff";
         };
         extensions = (with pkgs.vscode-extensions; [
           dracula-theme.theme-dracula
@@ -26,26 +43,21 @@
           jnoortheen.nix-ide
           mechatroner.rainbow-csv
           mkhl.direnv
-          ms-python.black-formatter
-          ms-python.debugpy
-          ms-python.python
-          ms-python.vscode-pylance
-          ms-python.vscode-python-envs
+          detachhead.basedpyright
+          charliermarsh.ruff
           ms-toolsai.jupyter
           ms-toolsai.jupyter-keymap
           ms-toolsai.jupyter-renderers
           ms-toolsai.vscode-jupyter-cell-tags
           ms-toolsai.vscode-jupyter-slideshow
-          ms-vscode-remote.remote-ssh
-          ms-vscode-remote.remote-ssh-edit
-          ms-vscode.cpptools
-          ms-vscode.remote-explorer
+          llvm-vs-code-extensions.vscode-clangd
+          vadimcn.vscode-lldb
           oderwat.indent-rainbow
           pkief.material-icon-theme
           usernamehw.errorlens
           vscodevim.vim
           yzhang.markdown-all-in-one
-        ]) ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
+        ]) ++ [ openRemoteSsh ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
           {
             name = "vscode-thunder-client";
             publisher = "rangav";
@@ -289,7 +301,16 @@
       bitwarden-cli
       bitwarden-desktop
       megacmd
-      megasync
+      (symlinkJoin {
+        name = "megasync-wayland";
+        paths = [ megasync ];
+        nativeBuildInputs = [ makeWrapper ];
+        postBuild = ''
+          wrapProgram $out/bin/megasync \
+            --set QT_QPA_PLATFORM wayland \
+            --set USE_MEGASYNC_AS_REGULAR_WINDOW 1
+        '';
+      })
       telegram-desktop
       nerd-fonts.symbols-only
       fd
