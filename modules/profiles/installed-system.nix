@@ -1,6 +1,6 @@
 { ... }:
 {
-  flake.nixosModules.installed-system = { ... }: {
+  flake.nixosModules.installed-system = { lib, ... }: {
     # Userborn maintains /etc account-file symlinks into persistent storage.
     # Persist the whole directory so atomic password-file replacements work.
     services.userborn = {
@@ -15,6 +15,8 @@
     # Let user-run passwd changes re-encrypt the login keyring with the new
     # password. Running passwd as root cannot provide the old keyring password.
     security.pam.services.passwd.enableGnomeKeyring = true;
+    # "sufficient" returns before pam_gnome_keyring sees the new password.
+    security.pam.services.passwd.rules.password.unix.control = lib.mkForce "required";
 
     preservation.preserveAt."/persist".directories = [
       { directory = "/var/lib/userborn"; inInitrd = true; }

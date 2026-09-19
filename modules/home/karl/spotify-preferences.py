@@ -3,8 +3,37 @@
 import json
 import os
 from pathlib import Path
+import re
 import sys
 import tempfile
+import zipfile
+
+
+def patch_startup_preferences(path):
+    """Initialize the native tray preference without visiting the Settings route."""
+    with zipfile.ZipFile(path) as archive:
+        entries = [(info, archive.read(info)) for info in archive.infolist()]
+    matches = 0
+    patched = []
+    for info, content in entries:
+        if info.filename == "xpui-snapshot.js":
+            source = content.decode()
+            pattern = (
+                r'(class (\w+) extends \w+\{static identifier="ui\.minimize_to_tray";'
+                r'.*?constructor\((\w+)\)\{super\(\3,\2\.identifier,\2\.serialize,\2\.deserialize\))'
+            )
+            source, matches = re.subn(
+                pattern,
+                r'\1;this.getValue().then(()=>this.setValue(true)).catch(error=>console.error("Tray initialization failed",error))',
+                source,
+            )
+            content = source.encode()
+        patched.append((info, content))
+    if matches != 1:
+        raise RuntimeError(f"Expected one Spotify tray preference constructor, found {matches}; review upstream changes")
+    with zipfile.ZipFile(path, "w") as archive:
+        for info, content in patched:
+            archive.writestr(info, content)
 
 
 def update_preferences(path, settings):
@@ -29,6 +58,9 @@ def update_preferences(path, settings):
 
 
 if __name__ == "__main__":
+    if sys.argv[1] == "--patch-xpui":
+        patch_startup_preferences(Path(sys.argv[2]))
+        sys.exit(0)
     settings = json.loads(Path(sys.argv[1]).read_text())
     config = Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config")
     # These are account preferences, not the global Spotify prefs file.

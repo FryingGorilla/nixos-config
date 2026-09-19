@@ -51,11 +51,25 @@ main() {
   getent passwd "$username" >/dev/null || die "Local user does not exist: $username"
   script_path=$(realpath -- "${BASH_SOURCE[0]}")
 
+  # Older configurations silently skipped the optional keyring module.
+  if ! awk '
+    $1 == "password" && $3 ~ /pam_unix[.]so$/ { unix_ok = ($2 == "required") }
+    $1 == "password" && $3 ~ /pam_gnome_keyring[.]so$/ && unix_ok { found = 1 }
+    END { exit !found }
+  ' /etc/pam.d/passwd; then
+    die "Rebuild first: passwd must run pam_unix as required before pam_gnome_keyring."
+  fi
+
   # Authenticate sudo before changing the login password. passwd must run as the
   # user so PAM can give GNOME Keyring both the old and new passwords.
   sudo -v
   passwd
   sudo bash "$script_path" --sync "$username"
+  printf '%s\n' \
+    'PAM attempted to update the Login keyring password.' \
+    'If its old password already differed from your login password, open Passwords and Keys (seahorse),' \
+    'right-click Login → Change Password, and use its old password to match your new login password.' \
+    'To test: log out and back in, then check that the Login keyring is unlocked in Passwords and Keys.'
 }
 
 main "$@"

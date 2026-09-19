@@ -9,7 +9,85 @@ let
   };
 in
 {
-  flake.homeModules.karl-desktop = { pkgs, ... }: {
+  flake.homeModules.karl-desktop = { config, lib, pkgs, ... }: let
+    clearClipboard = pkgs.writeShellScript "clear-clipboard" ''
+      ${pkgs.wl-clipboard}/bin/wl-copy --clear
+      ${pkgs.wl-clipboard}/bin/wl-copy --primary --clear
+      exec ${lib.getExe config.programs.noctalia.package} msg clipboard-clear
+    '';
+  in {
+    home.activation.createScreenshotDirectory = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      run ${pkgs.coreutils}/bin/mkdir -p "${config.home.homeDirectory}/Media/Pictures/Screenshots"
+    '';
+
+    # GUI overrides win over config.toml. Correct only login-box media settings,
+    # retaining the user's other widget positions and runtime preferences.
+    home.activation.noctaliaLockscreenPrivacy = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      run ${pkgs.python3.withPackages (ps: [ ps.tomlkit ])}/bin/python3 - <<'PY'
+      import os
+      from pathlib import Path
+      import tempfile
+      import tomlkit
+
+      path = Path(os.environ.get("XDG_STATE_HOME") or Path.home() / ".local/state") / "noctalia/settings.toml"
+      if path.exists():
+          original = path.read_text()
+          document = tomlkit.parse(original)
+          for widget in document.get("lockscreen_widgets", {}).get("widget", {}).values():
+              if widget.get("type") == "login_box":
+                  widget.setdefault("settings", {})["show_media"] = False
+          updated = tomlkit.dumps(document)
+          if updated != original:
+              with tempfile.NamedTemporaryFile(mode="w", dir=path.parent, delete=False) as f:
+                  f.write(updated)
+                  temporary = Path(f.name)
+              try:
+                  temporary.chmod(path.stat().st_mode & 0o777)
+                  temporary.replace(path)
+              finally:
+                  temporary.unlink(missing_ok=True)
+      PY
+    '';
+
+    systemd.user.services.clipboard-expiry = {
+      Unit = {
+        Description = "Clear clipboard selections and unpinned Noctalia history";
+        PartOf = [ "graphical-session.target" ];
+        After = [ "noctalia.service" ];
+      };
+      Service = {
+        Type = "oneshot";
+        ExecStart = clearClipboard;
+      };
+    };
+    systemd.user.timers.clipboard-expiry = {
+      Unit.PartOf = [ "graphical-session.target" ];
+      Timer = {
+        OnActiveSec = "5min";
+        OnUnitActiveSec = "5min";
+        AccuracySec = "1s";
+      };
+      Install.WantedBy = [ "graphical-session.target" ];
+    };
+
+    xdg.mimeApps = {
+      enable = true;
+      defaultApplications = {
+        "inode/directory" = [ "org.gnome.Nautilus.desktop" ];
+        "image/jpeg" = [ "org.gnome.Loupe.desktop" ];
+        "image/png" = [ "org.gnome.Loupe.desktop" ];
+        "image/webp" = [ "org.gnome.Loupe.desktop" ];
+        "image/gif" = [ "org.gnome.Loupe.desktop" ];
+        "video/mp4" = [ "org.gnome.Showtime.desktop" ];
+        "video/webm" = [ "org.gnome.Showtime.desktop" ];
+        "video/x-matroska" = [ "org.gnome.Showtime.desktop" ];
+      };
+    };
+    xdg.userDirs = {
+      enable = true;
+      createDirectories = true;
+      pictures = "${config.home.homeDirectory}/Media/Pictures";
+    };
     programs.kitty = {
       enable = true;
       settings.confirm_os_window_close = 0;
@@ -27,6 +105,10 @@ in
     programs.noctalia = {
       enable = true;
       settings = {
+        hooks = {
+          started = "${clearClipboard}";
+          session_locked = "${clearClipboard}";
+        };
         backdrop.enabled = true;
         theme = {
           mode = "dark";

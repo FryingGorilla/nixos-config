@@ -3,6 +3,8 @@
 {
   flake.nixosModules.desktop = { pkgs, ... }: {
     programs.niri.enable = true;
+    services.gvfs.enable = true;
+    services.tumbler.enable = true;
 
     programs.noctalia-greeter = {
       enable = true;
@@ -38,6 +40,31 @@
           scheme_selector_position = "hidden";
         };
       };
+    };
+
+    systemd.services.noctalia-greeter-avatar = {
+      description = "Set the Noctalia greeter avatar when profile.png exists";
+      wantedBy = [ "graphical.target" ];
+      before = [ "greetd.service" ];
+      after = [ "accounts-daemon.service" ];
+      requires = [ "accounts-daemon.service" ];
+      unitConfig.ConditionPathExists = "/home/karl/Media/Pictures/profile.png";
+      serviceConfig.Type = "oneshot";
+      script = ''
+        user_path="$(${pkgs.systemd}/bin/busctl call \
+          org.freedesktop.Accounts \
+          /org/freedesktop/Accounts \
+          org.freedesktop.Accounts \
+          FindUserByName s karl)"
+        user_path="''${user_path#*\"}"
+        user_path="''${user_path%%\"*}"
+
+        ${pkgs.systemd}/bin/busctl call \
+          org.freedesktop.Accounts \
+          "$user_path" \
+          org.freedesktop.Accounts.User \
+          SetIconFile s /home/karl/Media/Pictures/profile.png
+      '';
     };
 
     services.pulseaudio.enable = false;

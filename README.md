@@ -92,6 +92,29 @@ and `/persist`, and tmpfs for `/`. Only the paths listed in
 `modules/profiles/ephemeral-root.nix` survive reboot. Userborn keeps passwords
 in the preserved `/var/lib/nixos/users` directory, so `passwd` changes persist.
 Noctalia's runtime state is also preserved.
+Spotify's login and account preferences live in the preserved `.config/spotify`;
+its disposable cache is not preserved. The Spotify package also initializes its
+close-to-tray preference at startup instead of waiting for Settings to open.
+
+After rebuilding, run `bash scripts/set-password.sh` as your normal user to
+change the login password and update the Login keyring through PAM. If the
+keyring already has a different password, open **Passwords and Keys** (`seahorse`),
+right-click **Login → Change Password**, and use its old password to set it to
+your new login password. To verify automatic unlocking, log out and back in
+with your password, then check that Login is unlocked in Passwords and Keys.
+The script cannot repair an unknown old keyring password.
+
+Clipboard selections and unpinned Noctalia history clear every five minutes,
+on shell startup, and on lock. This is a periodic sweep, not five minutes per
+entry. Pinned history survives; avoid pinning passwords. Password copies are
+excluded when the source application supplies a password-manager MIME hint;
+ordinary text copies can still appear until the next clear.
+
+Nautilus, Inkscape, and GIMP are installed alongside Loupe (image viewing and
+basic editing), Showtime (video playback), and
+[Video Trimmer](https://apps.gnome.org/VideoTrimmer/) (quick video cuts).
+Home activation disables media in existing Noctalia login-box GUI overrides
+while preserving the other saved settings and widget positions.
 
 ## Niri shortcuts
 
@@ -126,7 +149,8 @@ overview backdrop. `Mod` is Super in the normal desktop session.
 | Mod+C / Mod+[/] | Center column / move window into or out of adjacent column |
 | Mod+O / Mod+Shift+Slash | Overview / shortcut overlay |
 | Print / Ctrl+Print / Alt+Print | Region / screen / window screenshot |
-| Mod+Space / Mod+S | Launcher / control center |
+| Mod+Space | Cycle US / Estonian keyboard layout (also while locked) |
+| Mod+Shift+Space / Mod+S | Launcher / control center |
 | Mod+Shift+Comma / Alt+Tab | Noctalia settings / window switcher |
 | Mod+Ctrl+V | Clipboard history |
 | Mod+Ctrl+L / Mod+Escape | Lock / session menu |

@@ -1,12 +1,16 @@
 { inputs, ... }:
 
 {
-  flake.homeModules.karl-programs = { pkgs, ... }:
+  flake.homeModules.karl-programs = { config, lib, pkgs, ... }:
   let
-    spotifySpotx = (pkgs.extend inputs.spotx-nix.overlays.default).spotify-spotx.override {
+    spotifySpotx = ((pkgs.extend inputs.spotx-nix.overlays.default).spotify-spotx.override {
       # Block ads without enabling SpotX's experimental UI features.
       spotxArgs = [ "-e" ];
-    };
+    }).overrideAttrs (old: {
+      postInstall = (old.postInstall or "") + ''
+        ${pkgs.python3}/bin/python3 ${./spotify-preferences.py} --patch-xpui $out/share/spotify/Apps/xpui.spa
+      '';
+    });
     spotifyPreferences = pkgs.writeText "spotify-preferences.json" (builtins.toJSON {
       "ui.minimize_to_tray" = true;
       "ui.track_os_notifications_enabled" = true;
@@ -41,6 +45,32 @@
     };
   in
   {
+    home.activation.configureBitwardenDesktop = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      bitwarden_data="${config.xdg.configHome}/Bitwarden/data.json"
+      if [ -f "$bitwarden_data" ]; then
+        run ${pkgs.python3}/bin/python3 - "$bitwarden_data" <<'PY'
+      import json
+      from pathlib import Path
+      import sys
+      import tempfile
+
+      path = Path(sys.argv[1])
+      data = json.loads(path.read_text())
+      if data.get("global_theming_selection") != "dark":
+          data["global_theming_selection"] = "dark"
+          with tempfile.NamedTemporaryFile(mode="w", dir=path.parent, delete=False) as file:
+              json.dump(data, file, indent="\t", ensure_ascii=False)
+              file.write("\n")
+              temporary = Path(file.name)
+          try:
+              temporary.chmod(path.stat().st_mode & 0o777)
+              temporary.replace(path)
+          finally:
+              temporary.unlink(missing_ok=True)
+      PY
+      fi
+    '';
+
     programs.vscodium = {
       enable = true;
       package = pkgs.vscodium.override {
@@ -322,10 +352,35 @@
       };
     };
 
+    # Wait for Noctalia's StatusNotifier tray before starting Vesktop hidden.
+    systemd.user.services.vesktop = {
+      Unit = {
+        Description = "Vesktop in the system tray";
+        After = [ "noctalia.service" ];
+        PartOf = [ "graphical-session.target" ];
+      };
+      Service = {
+        ExecStartPre = "${pkgs.coreutils}/bin/sleep 2";
+        ExecStart = "${lib.getExe config.programs.vesktop.package} --start-minimized";
+        Restart = "on-failure";
+        RestartSec = 5;
+      };
+      Install.WantedBy = [ "graphical-session.target" ];
+    };
+
     home.packages = with pkgs; [
       spotifyDesktop
+      nautilus
+      inkscape
+      gimp
+      loupe
+      showtime
+      video-trimmer
+      seahorse
       bitwarden-cli
       bitwarden-desktop
+      ente-auth
+      libreoffice-fresh
       megacmd
       (symlinkJoin {
         name = "megasync-wayland";
