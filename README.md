@@ -87,6 +87,13 @@ The tmpfs `size=4G` is a limit, not a reservation of 4 GiB RAM.
 
 ## Storage
 
+Rootless Docker is enabled on both machines. The daemon runs as the logged-in
+user, and `docker` works without `sudo` or membership in the privileged `docker`
+group. After rebuilding, log out and back in to start the user service and set
+`DOCKER_HOST` to its socket. Manage it with `systemctl --user status docker`.
+Docker data in `~/.local/share/docker` and the user's `~/.docker` configuration
+are preserved across reboots.
+
 Each installation uses 1 GiB EFI, 16 GiB swap, Btrfs subvolumes for `/nix`
 and `/persist`, and tmpfs for `/`. Only the paths listed in
 `modules/profiles/ephemeral-root.nix` survive reboot. Userborn keeps passwords

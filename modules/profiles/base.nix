@@ -25,6 +25,11 @@
 
     programs.zsh.enable = true;
 
+    virtualisation.docker.rootless = {
+      enable = true;
+      setSocketVariable = true;
+    };
+
     # Smart-card reader access for DigiDoc4 and the Web eID native messaging host.
     services.pcscd.enable = true;
 

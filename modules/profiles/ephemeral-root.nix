@@ -47,6 +47,7 @@
             ".local/share"
             ".local/state/noctalia"
             ".codex"
+            ".docker"
             ".ssh"
             ".librewolf"
             ".mozilla"
