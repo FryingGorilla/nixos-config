@@ -23,8 +23,15 @@
           ) user.${rangeOption}
         ) users;
     in {
-      "subuid".text = renderRanges "subUidRanges" "startUid";
-      "subgid".text = renderRanges "subGidRanges" "startGid";
+      # newuidmap/newgidmap reject symlinks; a mode makes NixOS copy real files.
+      "subuid" = {
+        text = renderRanges "subUidRanges" "startUid";
+        mode = "0644";
+      };
+      "subgid" = {
+        text = renderRanges "subGidRanges" "startGid";
+        mode = "0644";
+      };
     };
 
     # Let user-run passwd changes re-encrypt the login keyring with the new
