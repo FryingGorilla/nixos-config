@@ -1,6 +1,6 @@
 { ... }:
 {
-  flake.nixosModules.installed-system = { lib, ... }: {
+  flake.nixosModules.installed-system = { config, lib, ... }: {
     # Userborn maintains /etc account-file symlinks into persistent storage.
     # Persist the whole directory so atomic password-file replacements work.
     services.userborn = {
@@ -11,6 +11,21 @@
     users.users.karl.initialPassword = "12345";
     users.users.karl.uid = 1000;
     users.users.root.hashedPassword = "!";
+
+    # Userborn does not generate subordinate ID files. Render explicitly
+    # declared ranges so rootless containers can create their user namespaces.
+    environment.etc = let
+      users = lib.filter (user: user.enable) (lib.attrValues config.users.users);
+      renderRanges = rangeOption: startOption:
+        lib.concatMapStrings (user:
+          lib.concatMapStrings (range:
+            "${user.name}:${toString range.${startOption}}:${toString range.count}\n"
+          ) user.${rangeOption}
+        ) users;
+    in {
+      "subuid".text = renderRanges "subUidRanges" "startUid";
+      "subgid".text = renderRanges "subGidRanges" "startGid";
+    };
 
     # Let user-run passwd changes re-encrypt the login keyring with the new
     # password. Running passwd as root cannot provide the old keyring password.

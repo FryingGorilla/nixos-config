@@ -5,6 +5,10 @@
     users.users.karl = {
       isNormalUser = true;
       extraGroups = [ "networkmanager" "wheel" ];
+      # Stable subordinate IDs for rootless containers, including with Userborn.
+      autoSubUidGidRange = false;
+      subUidRanges = [ { startUid = 100000; count = 65536; } ];
+      subGidRanges = [ { startGid = 100000; count = 65536; } ];
       shell = pkgs.zsh;
     };
 
