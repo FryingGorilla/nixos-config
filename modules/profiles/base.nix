@@ -1,7 +1,23 @@
-{ ... }:
+{ inputs, ... }:
 
 {
   flake.nixosModules.base = { pkgs, ... }: {
+    imports = [ inputs.vplan.nixosModules.default ];
+    programs.vplan = {
+      enable = true;
+      settings = {
+        api_base = "http://127.0.0.1:10531/v1";
+        api_key_env = "OPENAI_API_KEY";
+        analysis_model = "gpt-6-luna";
+        hint_model = "gpt-6-astra";
+        feedback_model = "gpt-6.1-sol";
+        goals = [ { name = "training"; mode = "practice"; } ];
+        eio_archive = "~/Projects/VP/plaan/eio";
+        cf_archive = "~/Projects/VP/plaan/codeforces";
+        assessments = "~/Projects/VP/plaan/solutions/reports/index.json";
+      };
+    };
+
     nix.settings = {
       experimental-features = [ "nix-command" "flakes" ];
       substituters = [

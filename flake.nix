@@ -49,6 +49,8 @@
     };
 
     preservation.url = "github:nix-community/preservation";
+
+    vplan.url = "path:/home/karl/Projects/VP/plaan/cli";
   };
 
   outputs = inputs:

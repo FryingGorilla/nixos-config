@@ -14,6 +14,11 @@
     fileSystems."/nix".neededForBoot = true;
     fileSystems."/persist".neededForBoot = true;
 
+    boot.tmp = {
+      useTmpfs = false;
+      cleanOnBoot = true;
+    };
+
     preservation = {
       enable = true;
       preserveAt."/persist" = {
@@ -24,6 +29,8 @@
           }
         ];
         directories = [
+          # Disk-backed scratch space, mounted before boot-time cleanup runs.
+          { directory = "/tmp"; mode = "1777"; inInitrd = true; }
           "/var/log"
           { directory = "/var/lib/nixos"; inInitrd = true; }
           "/var/lib/systemd/coredump"
@@ -40,12 +47,15 @@
             "Media"
             "Game Backups"
             ".config/nixos"
+            ".config/normcap"
+            ".config/vplan"
             ".config/Bitwarden"
             ".config/Bitwarden CLI"
             ".config/vesktop"
             ".config/spotify"
             ".local/share"
             ".local/state/noctalia"
+            ".local/state/vplan"
             ".codex"
             ".docker"
             ".ssh"

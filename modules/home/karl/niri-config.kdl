@@ -160,6 +160,7 @@ binds {
     Print { screenshot; }
     Ctrl+Print { screenshot-screen; }
     Alt+Print { screenshot-window; }
+    Mod+Shift+Print repeat=false hotkey-overlay-title="Extract text to clipboard" { spawn "normcap"; }
 
     Mod+Ctrl+L repeat=false { spawn "noctalia" "msg" "session" "lock"; }
     Mod+Escape repeat=false { spawn "noctalia" "msg" "panel-toggle" "session"; }

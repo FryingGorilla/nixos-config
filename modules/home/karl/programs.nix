@@ -78,6 +78,7 @@
       };
       profiles.default = {
         userSettings = {
+          "explorer.compactFolders" = false;
           "workbench.iconTheme" = "material-icon-theme";
           "workbench.sideBar.location" = "right";
           "workbench.secondarySideBar.defaultVisibility" = "hidden";
@@ -109,6 +110,7 @@
           vadimcn.vscode-lldb
           oderwat.indent-rainbow
           pkief.material-icon-theme
+          tomoki1207.pdf
           usernamehw.errorlens
           vscodevim.vim
           yzhang.markdown-all-in-one
@@ -376,6 +378,7 @@
       loupe
       showtime
       video-trimmer
+      normcap
       seahorse
       bitwarden-cli
       bitwarden-desktop
@@ -398,7 +401,11 @@
       btop
       fastfetch
       tealdeer
+      poppler-utils
+      qpdf
       gcc
+      boost
+      boost.dev
       nodejs
       (python3.withPackages (pythonPackages: [ pythonPackages.jupyter ]))
       uv

@@ -17,6 +17,10 @@ Home Manager configuration is also available. Files are grouped by responsibilit
 
 ## Validate and build
 
+For C++ development with GCC and Boost headers and libraries available to the
+compiler, enter `nix develop path:~/.config/nixos#cpp`. Boost is also installed
+in Karl's Home Manager profile.
+
 ```sh
 nix flake check
 sudo nixos-rebuild switch --accept-flake-config --flake path:.#YOUR_MACHINE
@@ -27,6 +31,11 @@ The standalone Home Manager configuration can be built with:
 ```sh
 home-manager switch --flake .#karl
 ```
+
+Vplan is installed from `~/Projects/VP/plaan/cli` using its own pinned Nixpkgs
+dependency set. Refresh it after updating that checkout with
+`nix flake update vplan --flake path:.`, then rebuild. Keep its Nixpkgs input
+independent so its declared Python dependency versions are available.
 
 ## Fresh installation
 
@@ -86,6 +95,10 @@ pressure from disk capacity or a slow source build, check `free -h`,
 The tmpfs `size=4G` is a limit, not a reservation of 4 GiB RAM.
 
 ## Storage
+
+`/tmp` is backed by `/persist/tmp` on disk and cleared on every boot. It uses
+the normal temporary-directory permissions (`1777`) and shares the disk's free
+space rather than the RAM-backed root filesystem's 4 GiB limit.
 
 Rootless Docker is enabled on both machines. The daemon runs as the logged-in
 user, and `docker` works without `sudo` or membership in the privileged `docker`
@@ -156,6 +169,7 @@ overview backdrop. `Mod` is Super in the normal desktop session.
 | Mod+C / Mod+[/] | Center column / move window into or out of adjacent column |
 | Mod+O / Mod+Shift+Slash | Overview / shortcut overlay |
 | Print / Ctrl+Print / Alt+Print | Region / screen / window screenshot |
+| Mod+Shift+Print | Select a region in NormCap and copy its text |
 | Mod+Space | Cycle US / Estonian keyboard layout (also while locked) |
 | Mod+Shift+Space / Mod+S | Launcher / control center |
 | Mod+Shift+Comma / Alt+Tab | Noctalia settings / window switcher |

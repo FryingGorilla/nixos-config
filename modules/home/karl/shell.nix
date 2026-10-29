@@ -105,6 +105,7 @@
       ];
 
       shellAliases = {
+        code = "codium";
         sudo = "sudo ";
         cat = "bat --paging=never";
         top = "btop";
